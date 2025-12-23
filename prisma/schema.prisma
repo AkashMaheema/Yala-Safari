@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum BookingStatus {
+  PENDING
+  PAID
+}
+
+model Package {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  duration    String
+  price       Float
+  imageUrl    String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  bookings    Booking[]
+}
+
+model Booking {
+  id          String         @id @default(cuid())
+  name        String
+  email       String
+  safariDate  DateTime
+  peopleCount Int
+  packageId   String?
+  totalAmount Float          @default(0)
+  status      BookingStatus  @default(PENDING)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  package Package? @relation(fields: [packageId], references: [id])
+
+  @@index([status])
+  @@index([packageId])
+}
