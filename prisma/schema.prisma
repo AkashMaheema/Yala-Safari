@@ -11,6 +11,19 @@ enum BookingStatus {
   PAID
 }
 
+model Admin {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([username])
+  @@index([email])
+}
+
 model Package {
   id          String    @id @default(cuid())
   title       String

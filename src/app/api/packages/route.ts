@@ -4,12 +4,6 @@ import { prisma } from "@/lib/prisma";
 // GET /api/packages - Get all active packages
 export async function GET() {
   try {
-    console.log("DATABASE_URL exists:", !!process.env.DATABASE_URL);
-    console.log(
-      "DATABASE_URL prefix:",
-      process.env.DATABASE_URL?.substring(0, 20)
-    );
-
     const packages = await prisma.package.findMany({
       where: { isActive: true },
       orderBy: { createdAt: "desc" },

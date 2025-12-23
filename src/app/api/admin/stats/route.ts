@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
-import { getPrismaClient } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 // GET /api/admin/stats - Get admin dashboard statistics
 export async function GET() {
   try {
-    const prisma = getPrismaClient();
     const [totalBookings, pendingBookings, paidBookings] = await Promise.all([
       prisma.booking.count(),
       prisma.booking.count({ where: { status: "PENDING" } }),
