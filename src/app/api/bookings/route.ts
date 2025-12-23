@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
-import { getPrismaClient } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 // POST /api/bookings - Create new booking
 export async function POST(request: Request) {
   try {
-    const prisma = getPrismaClient();
     const body = await request.json();
     const { name, email, safariDate, peopleCount, packageId } = body;
 
@@ -55,12 +54,11 @@ export async function POST(request: Request) {
 // GET /api/bookings - Get all bookings (admin)
 export async function GET(request: Request) {
   try {
-    const prisma = getPrismaClient();
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
 
     const bookings = await prisma.booking.findMany({
-      where: status ? { status } : {},
+      where: status ? { status: status as "PENDING" | "PAID" } : {},
       include: {
         package: true,
       },

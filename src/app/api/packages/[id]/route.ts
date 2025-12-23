@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
-import { getPrismaClient } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 // PUT /api/packages/[id] - Update package
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const prisma = getPrismaClient();
+    const { id } = await params;
     const body = await request.json();
     const { title, description, duration, price, imageUrl, isActive } = body;
 
     const updatedPackage = await prisma.package.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...(title && { title }),
         ...(description && { description }),
@@ -36,12 +36,12 @@ export async function PUT(
 // DELETE /api/packages/[id] - Soft delete package
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const prisma = getPrismaClient();
+    const { id } = await params;
     await prisma.package.update({
-      where: { id: params.id },
+      where: { id },
       data: { isActive: false },
     });
 

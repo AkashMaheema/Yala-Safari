@@ -15,6 +15,7 @@ const pool = new Pool({
 const adapter = new PrismaPg(pool);
 
 // Create a function to instantiate Prisma Client
+
 const createPrismaClient = () => {
   return new PrismaClient({
     adapter,
