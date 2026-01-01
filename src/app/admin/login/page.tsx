@@ -31,8 +31,7 @@ export default function AdminLogin() {
 
       if (response.ok) {
         // Redirect to admin dashboard
-        console.log("Login successful, redirecting...");
-        window.location.href = "/admin";
+        router.push("/admin");
       } else {
         setError(data.error || "Login failed");
       }
