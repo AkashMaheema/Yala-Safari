@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
+import { toast } from "react-toastify";
 
 interface Package {
   id: string;
@@ -72,9 +73,7 @@ export default function BookingSection() {
 
       if (response.ok) {
         const booking = await response.json();
-        alert(
-          `Booking successful! Your booking ID is ${booking.id}. We'll contact you shortly.`
-        );
+        toast.success("Booking Successful!");
         // Reset form
         setFormData({
           fullName: "",
@@ -85,16 +84,15 @@ export default function BookingSection() {
         });
       } else {
         const error = await response.json();
-        alert(`Booking failed: ${error.error}`);
+        toast.error("Booking Failed!");
       }
     } catch (error) {
       console.error("Error submitting booking:", error);
-      alert("Failed to submit booking. Please try again.");
+      toast.error("Booking Failed!");
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <section id="booking" className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

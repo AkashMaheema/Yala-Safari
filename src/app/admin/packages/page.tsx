@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Modal from "@/components/admin/Modal";
+import { toast } from "react-toastify";
 
 interface Package {
   id: string;
@@ -63,10 +64,18 @@ export default function AdminPackages() {
 
       if (response.ok) {
         await fetchPackages();
+        toast.success(
+          editingPackage
+            ? "Package updated successfully!"
+            : "Package created successfully!"
+        );
         resetForm();
+      } else {
+        toast.error("Failed to save package");
       }
     } catch (error) {
       console.error("Error saving package:", error);
+      toast.error("Error saving package. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -85,19 +94,56 @@ export default function AdminPackages() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this package?")) return;
+    // Using a custom toast for confirmation
+    const confirmDelete = () => {
+      toast(
+        ({ closeToast }) => (
+          <div>
+            <p className="font-semibold mb-3">
+              Are you sure you want to delete this package?
+            </p>
+            <div className="flex space-x-2">
+              <button
+                onClick={async () => {
+                  try {
+                    const response = await fetch(`/api/packages/${id}`, {
+                      method: "DELETE",
+                    });
 
-    try {
-      const response = await fetch(`/api/packages/${id}`, {
-        method: "DELETE",
-      });
+                    if (response.ok) {
+                      await fetchPackages();
+                      toast.success("Package deleted successfully!");
+                    } else {
+                      toast.error("Failed to delete package");
+                    }
+                  } catch (error) {
+                    console.error("Error deleting package:", error);
+                    toast.error("Error deleting package");
+                  }
+                  closeToast?.();
+                }}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                Delete
+              </button>
+              <button
+                onClick={closeToast}
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ),
+        {
+          position: "top-center",
+          autoClose: false,
+          closeButton: false,
+        }
+      );
+    };
 
-      if (response.ok) {
-        await fetchPackages();
-      }
-    } catch (error) {
-      console.error("Error deleting package:", error);
-    }
+    confirmDelete();
   };
 
   const resetForm = () => {
@@ -244,8 +290,8 @@ export default function AdminPackages() {
                 Image URL
               </label>
               <input
-                type="url"
-                placeholder="https://example.com/safari-image.jpg"
+                type="text"
+                placeholder="/images/half-day-safari.jpg"
                 value={formData.imageUrl}
                 onChange={(e) =>
                   setFormData({ ...formData, imageUrl: e.target.value })
